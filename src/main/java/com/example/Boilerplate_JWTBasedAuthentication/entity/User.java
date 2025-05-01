@@ -23,10 +23,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(name = "name")
+    private String name;
 
-    @Column(nullable = false)
+    @Column(name = "email",unique = true, nullable = false)
+    private String email;
+
+    @Column(name = "password",nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -36,6 +39,12 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Recruiter recruiter;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Employee employee;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
@@ -43,10 +52,10 @@ public class User implements UserDetails {
                 .collect(Collectors.toSet());
     }
 
-    // true: tài khoản đã được xác minh email
-    // false: tài khoản chưa được xác nhận email
-    @Column(nullable = false)
-    private boolean enabled = false;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
     @Override
     public boolean isAccountNonExpired() {

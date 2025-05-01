@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -25,6 +26,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Auth Controller", description = "API for login and register")
+@Slf4j
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -41,6 +43,8 @@ public class AuthController {
             @Parameter(description = "Register info - email & password", required = true)
             @RequestBody RegisterRequest request
     ) throws UsernameExistedException, RoleNotFoundException {
+
+        log.info("username: = " + request.getUsername() +". pass = " + request.getPassword());
 
         authService.register(request);
 

@@ -12,8 +12,8 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initRoles(RoleRepository roleRepository) {
         return args -> {
-            createRoleIfNotFound(roleRepository, "ROLE_USER");
-            createRoleIfNotFound(roleRepository, "ROLE_ADMIN");
+            createRoleIfNotFound(roleRepository, "ROLE_EMPLOYEE");
+            createRoleIfNotFound(roleRepository, "ROLE_RECRUITER");
         };
     }
 
