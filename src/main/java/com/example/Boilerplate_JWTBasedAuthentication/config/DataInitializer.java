@@ -19,7 +19,8 @@ public class DataInitializer {
 
     private void createRoleIfNotFound(RoleRepository roleRepository, String roleName) {
         if (!roleRepository.existsByName(roleName)) {
-            Role role = Role.builder().name(roleName).build();
+            Role role = new Role();
+            role.setName(roleName);
             roleRepository.save(role);
         }
     }

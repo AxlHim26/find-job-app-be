@@ -15,12 +15,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (!user.isEnabled()) {
-            throw new RuntimeException("Account not confirmed, please check confirm link in your email");
-        }
+//        if (!user.isEnabled()) {
+//            throw new RuntimeException("Account not confirmed, please check confirm link in your email");
+//        }
 
         return user;
     }

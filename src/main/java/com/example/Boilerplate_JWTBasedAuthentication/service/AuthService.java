@@ -36,25 +36,22 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final EmailVerificationService emailVerificationService;
 
     public void register(RegisterRequest request) throws UsernameExistedException, RoleNotFoundException {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()){
+        if (userRepository.findByName(request.getName()).isPresent()){
             throw new UsernameExistedException("Email đã được sử dụng");
         }
 
-        Role defaultRole = roleRepository.findByName("ROLE_USER")
+        Role role = roleRepository.findByName(request.getRole())
                 .orElseThrow(() -> new RoleNotFoundException("Role is not existed"));
 
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Set.of(defaultRole))
-                .enabled(false)
-                .build();
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(Set.of(role));
 
         userRepository.save(user);
-        emailVerificationService.sendVerificationEmail(user); // gửi email xác nhận
     }
 
     @Transactional
@@ -82,7 +79,7 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password");
         }
 
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByName(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Generate JWT for client
@@ -91,11 +88,18 @@ public class AuthService {
 
         // Lưu refresh token vào DB
         refreshTokenRepository.deleteByUser(user); // xóa token cũ (nếu có)
-        RefreshToken tokenEntity = RefreshToken.builder()
-                .token(refreshToken)
-                .user(user)
-                .expiryDate(Instant.now().plus(7, ChronoUnit.DAYS))
-                .build();
+//        RefreshToken tokenEntity = RefreshToken.builder()
+//                .token(refreshToken)
+//                .user(user)
+//                .expiryDate(Instant.now().plus(7, ChronoUnit.DAYS))
+//                .build();
+
+        RefreshToken tokenEntity = new RefreshToken();
+        tokenEntity.setToken(refreshToken);
+        tokenEntity.setUser(user);
+        tokenEntity.setExpiryDate(Instant.now().plus(7, ChronoUnit.DAYS));
+
+        // Lưu refreshtoken vào db
         refreshTokenRepository.save(tokenEntity);
 
         return AuthResponse.builder()

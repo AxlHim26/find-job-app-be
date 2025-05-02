@@ -5,7 +5,6 @@ import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.UserInfoRespon
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Role;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -37,7 +36,7 @@ public class UserController {
     public ResponseEntity<RestResponse<UserInfoResponse>> getUserInfo(Authentication authentication) {
         String username = authentication.getName();
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         UserInfoResponse userInfo = UserInfoResponse.builder()

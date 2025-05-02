@@ -6,7 +6,6 @@ import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RegisterReques
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.AuthResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.*;
 import com.example.Boilerplate_JWTBasedAuthentication.service.AuthService;
-import com.example.Boilerplate_JWTBasedAuthentication.service.EmailVerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +30,6 @@ import java.time.Duration;
 public class AuthController {
 
     private final AuthService authService;
-    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/register")
     @Operation(summary = "Register by email & password", description = "Create a user base on email & password")
@@ -44,7 +42,7 @@ public class AuthController {
             @RequestBody RegisterRequest request
     ) throws UsernameExistedException, RoleNotFoundException {
 
-        log.info("username: = " + request.getUsername() +". pass = " + request.getPassword());
+        log.info("username: = " + request.getName() +". pass = " + request.getPassword());
 
         authService.register(request);
 
@@ -82,16 +80,16 @@ public class AuthController {
          * - sameSite("Strict"): Cookie chỉ được gửi khi request xuất phát từ cùng origin. Chống tấn công CSRF:
          * Ngăn các site khác lợi dụng cookie này.
          */
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(Duration.ofDays(7))
-                .sameSite("Strict")
-                .build();
-
-        // Thêm cookie vào header của phản hồi
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+//        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .path("/")
+//                .maxAge(Duration.ofDays(7))
+//                .sameSite("Strict")
+//                .build();
+//
+//        // Thêm cookie vào header của phản hồi
+//        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 RestResponse.success(authResponse, "User logged in successfully")
@@ -108,27 +106,11 @@ public class AuthController {
     })
     @PostMapping("/logout")
     public ResponseEntity<RestResponse<Void>> logout(
-            @Parameter(
-                    description = "Refresh token stored in the cookie",
-                    required = true,
-                    example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-            )
             @CookieValue("refresh_token") String refreshToken,
             HttpServletResponse response
     ) throws RefreshTokenNotFoundException {
         // Xóa refresh_token trong db
         authService.logout(refreshToken);
-
-        // Xóa cookie ở phía client
-        ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(0)
-                .sameSite("Strict")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
         return ResponseEntity.ok(
                 RestResponse.success("Logged out successfully")
@@ -157,32 +139,6 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 RestResponse.success(authResponse, "Token refreshed successfully")
-        );
-    }
-
-    @GetMapping("/confirm")
-    @Operation(
-            summary = "Confirm account email",
-            description = "Activate a user account using a verification token sent via email"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Account confirmed successfully"),
-            @ApiResponse(responseCode = "404", description = "Verification token not found"),
-            @ApiResponse(responseCode = "400", description = "Verification token has expired")
-    })
-    public ResponseEntity<RestResponse<Void>> confirmEmail(
-            @Parameter(
-                    description = "Token from email verification link",
-                    required = true,
-                    example = "a1b2c3d4e5f6g7h8i9"
-            )
-            @RequestParam String token
-    ) throws VeryficationTokenNotFoundException, ExpiredVeryficationToken {
-
-        emailVerificationService.confirmToken(token);
-
-        return ResponseEntity.ok(
-                RestResponse.success("Account confirm successfully")
         );
     }
 }
