@@ -68,29 +68,6 @@ public class AuthController {
     ) {
         AuthResponse authResponse = authService.login(request);
 
-        /**
-         * - Tạo cookie với tên là refresh_token với giá trị là chuỗi refreshtoken từ đối tượng
-         * AuthResponse sau khi xác nhận email và password.
-         * - httpOnly(true): Cookie chỉ được gửi qua giao thức HTTP/HTTPS, ngăn chặn truy cập từ javascript
-         * (phòng chống tấn công XSS).
-         * - secure(false): Cookie được gửi qua HTTP thường (không yêu cầu HTTPS). Nếu secure(true), cookie
-         * chỉ gửi qua HTTPS (nên dùng trong môi trường production).
-         * - path("/"): Cookie có hiệu lực cho tất cả các path trên domain hiện tại.
-         * - maxAge(Duration.ofDays(7)): Thời gian tồn tại của cookie là 7 ngày.
-         * - sameSite("Strict"): Cookie chỉ được gửi khi request xuất phát từ cùng origin. Chống tấn công CSRF:
-         * Ngăn các site khác lợi dụng cookie này.
-         */
-//        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
-//                .httpOnly(true)
-//                .secure(false)
-//                .path("/")
-//                .maxAge(Duration.ofDays(7))
-//                .sameSite("Strict")
-//                .build();
-//
-//        // Thêm cookie vào header của phản hồi
-//        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 RestResponse.success(authResponse, "User logged in successfully")
         );

@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder
 public class AuthResponse {
     private String username;
-    private Set<Role> roles;
+    private String role;
     private String token;
     private String refreshToken;
 }
