@@ -11,8 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
-    private String username;
+    private String email;
+    private String name;
     private String role;
     private String token;
-    private String refreshToken;
 }
