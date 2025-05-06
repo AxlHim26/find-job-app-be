@@ -4,7 +4,8 @@ import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.LoginRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RegisterRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.AuthResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.*;
+import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.RoleNotFoundException;
+import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.UsernameExistedException;
 import com.example.Boilerplate_JWTBasedAuthentication.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,13 +15,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,7 +42,10 @@ public class AuthController {
             @RequestBody RegisterRequest request
     ) throws UsernameExistedException, RoleNotFoundException {
 
-        log.info("username: = " + request.getName() +". pass = " + request.getPassword());
+        log.info(" name: = " + request.getName() +
+                ", email = " + request.getEmail() +
+                ", pass = " + request.getPassword() +
+                ", role = " + request.getRole());
 
         authService.register(request);
 
