@@ -3,6 +3,7 @@ package com.example.Boilerplate_JWTBasedAuthentication.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,7 @@ public class JobPost {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description",  columnDefinition = "LONGTEXT")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "position")
@@ -37,10 +38,34 @@ public class JobPost {
     @Column(name = "salary")
     private String salary;
 
+    @Column(name = "expirate_at")
+    private Date expirateAt;
+
+    @Column(name = "created_at")
+    private Date createdAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_id", nullable = false)
     private Recruiter recruiter;
 
     @OneToMany(mappedBy = "jobPost", fetch = FetchType.LAZY)
     private List<Application> applications;
+
+    // Constructor tùy chỉnh
+    public JobPost(String title, String description, String position, String qualification, String experience, String type, String salary) {
+        this.title = title;
+        this.description = description;
+        this.position = position;
+        this.qualification = qualification;
+        this.experience = experience;
+        this.type = type;
+        this.salary = salary;
+    }
+
+    // Tự động gán ngày tạo trước khi persist
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
 }
+
