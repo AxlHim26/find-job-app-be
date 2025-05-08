@@ -3,9 +3,13 @@ package com.example.Boilerplate_JWTBasedAuthentication.service;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.LoginRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RegisterRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.AuthResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.Recruiter;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Role;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
 import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.*;
+import com.example.Boilerplate_JWTBasedAuthentication.repository.EmployeeRepository;
+import com.example.Boilerplate_JWTBasedAuthentication.repository.RecruiterRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.RoleRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.security.JwtService;
@@ -22,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Set;
 
 @Slf4j
@@ -33,7 +38,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmployeeRepository employeeRepository;
+    private final RecruiterRepository recruiterRepository;
 
+    @Transactional
     public void register(RegisterRequest request) throws UsernameExistedException, RoleNotFoundException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new UsernameExistedException("Email đã được sử dụng");
@@ -48,7 +56,20 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRoles(Set.of(role));
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+
+        // Tạo bản ghi Employee nếu role là ROLE_EMPLOYEE
+        if (role.getName().equals("ROLE_EMPLOYEE")) {
+            Employee employee = new Employee();
+            employee.setUser(user);
+            employee.setGender(true); // Default value
+            employee.setBirthday(new Date()); // Default value
+            employeeRepository.save(employee);
+        } else if (role.getName().equals("ROLE_RECRUITER")) {
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(user);
+            recruiterRepository.save(recruiter);
+        }
     }
 
     @Transactional

@@ -20,6 +20,9 @@ public class Employee {
     @Column(name = "gender",nullable = false)
     private Boolean gender;
 
+    @Column(name = "avatar_link", nullable = true)
+    private String avatarLink;
+
     @Column(name = "birthday")
     private Date birthday;
 
