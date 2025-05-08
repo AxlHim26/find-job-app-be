@@ -25,7 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Set;
 
@@ -63,7 +64,9 @@ public class AuthService {
             Employee employee = new Employee();
             employee.setUser(user);
             employee.setGender(true); // Default value
-            employee.setBirthday(new Date()); // Default value
+            // Set birthday to current date in Vietnam timezone
+            LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+            employee.setBirthday(Date.from(currentDate.atStartOfDay(ZoneId.of("Asia/Ho_Chi_Minh")).toInstant()));
             employeeRepository.save(employee);
         } else if (role.getName().equals("ROLE_RECRUITER")) {
             Recruiter recruiter = new Recruiter();
