@@ -1,10 +1,13 @@
 package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.ChangePasswordRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.UpdateEmployeeProfileRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.EmployeeProfileDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.UpdateEmployeeProfileResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.exception.custome.WrongCurrentPasswordException;
 import com.example.Boilerplate_JWTBasedAuthentication.service.EmployeeService;
+import com.example.Boilerplate_JWTBasedAuthentication.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final UserService userService;
 
     @GetMapping("/profile")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
@@ -44,6 +48,24 @@ public class EmployeeController {
                 RestResponse.success(
                         employeeService.updateProfile(username, request),
                         "Update profile successfully"
+                )
+        );
+    }
+
+    @PostMapping("/change-password")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<RestResponse<Void>> changePassword(
+            @RequestBody ChangePasswordRequest request
+    ) throws WrongCurrentPasswordException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // đổi mk
+        userService.changePassword(username, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(
+                        "Change password successfully"
                 )
         );
     }
