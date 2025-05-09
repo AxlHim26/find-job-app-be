@@ -1,6 +1,7 @@
 package com.example.Boilerplate_JWTBasedAuthentication.service;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.UpdateEmployeeProfileRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.EmployeeProfileDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
@@ -25,9 +26,9 @@ public class EmployeeService {
         this.userRepository = userRepository;
     }
 
-    public RestResponse<EmployeeProfileDTO> getEmployeeProfile(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("Username not found")
+    public RestResponse<EmployeeProfileDTO> getEmployeeProfile(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
         );
         Employee employee = user.getEmployee();
 
@@ -55,5 +56,34 @@ public class EmployeeService {
                 employeeProfileDTO,
                 "Get employee profile success"
         );
+    }
+
+    public UpdateEmployeeProfileRequest updateProfile(Long id, UpdateEmployeeProfileRequest request) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+        Employee employee = user.getEmployee();
+
+        user.setName(request.getFullName());
+        user.setEmail(request.getEmail());
+        employee.setPhoneNumber(request.getPhoneNumber());
+        employee.setGender(request.getGender().equals("MALE"));
+        employee.setLocation(request.getLocation());
+
+        // Lấy đối tượng birthdate
+        LocalDate localBirthDay = LocalDate.of(
+                request.getDateOfBirth().getYear(),
+                request.getDateOfBirth().getMonth(),
+                request.getDateOfBirth().getDay()
+        );
+
+        Date birthDay = Date.from(localBirthDay.atStartOfDay(VIETNAM_ZONE).toInstant());
+        employee.setBirthday(birthDay);
+
+        // Lưu employee và user vào DB
+        employeeRepository.save(employee);
+        userRepository.save(user);
+
+        return request;
     }
 }

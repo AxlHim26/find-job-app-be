@@ -1,6 +1,7 @@
 package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.UpdateEmployeeProfileRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.EmployeeProfileDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.service.EmployeeService;
 import lombok.AllArgsConstructor;
@@ -10,8 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @AllArgsConstructor
@@ -20,15 +20,29 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/profile")
+    @GetMapping("/profile/{id}")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    public ResponseEntity<RestResponse<EmployeeProfileDTO>> getEmployeeProfile(){
-        // Lấy ra người dùng đang thực hiện request
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<RestResponse<EmployeeProfileDTO>> getEmployeeProfile(
+            @PathVariable("id") Long id)
+    {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(employeeService.getEmployeeProfile(username));
+                .body(employeeService.getEmployeeProfile(id));
+    }
+
+    @PostMapping("/profile/{id}")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<RestResponse<UpdateEmployeeProfileRequest>> updateProfile(
+            @PathVariable("id") Long id,
+            @RequestBody UpdateEmployeeProfileRequest request
+    ) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                RestResponse.success(
+                        employeeService.updateProfile(id, request),
+                        "Update profile successfully"
+                )
+        );
     }
 }
