@@ -18,6 +18,7 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
+    private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     public EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository) {
         this.employeeRepository = employeeRepository;
@@ -32,12 +33,12 @@ public class EmployeeService {
 
         Date birthDay = employee.getBirthday();
         LocalDate localDate = birthDay.toInstant()
-                .atZone(ZoneId.systemDefault())
+                .atZone(VIETNAM_ZONE)
                 .toLocalDate();
 
         EmployeeProfileDTO.DateOfBirth dateOfBirth = EmployeeProfileDTO.DateOfBirth.builder()
                 .day(localDate.getDayOfMonth())
-                .month(localDate.getDayOfMonth())
+                .month(localDate.getMonthValue())
                 .year(localDate.getYear())
                 .build();
 
