@@ -1,6 +1,7 @@
-package com.example.Boilerplate_JWTBasedAuthentication.dto.request;
+package com.example.Boilerplate_JWTBasedAuthentication.dto.respone;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +9,8 @@ import java.util.Date;
 
 @Data
 @Builder
-public class JobPostRequest {
+@AllArgsConstructor
+public class ListJobResponse {
     private String title;
     private String description;
     private String position;
@@ -16,7 +18,9 @@ public class JobPostRequest {
     private String experience;
     private String type;
     private String salary;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date expirateAt;
+    private Date createdAt;
+    private String nameCompany;
+    private String location;
+    private String avatar;
 }

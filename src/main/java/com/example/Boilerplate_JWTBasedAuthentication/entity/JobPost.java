@@ -52,7 +52,7 @@ public class JobPost {
     private List<Application> applications;
 
     // Constructor tùy chỉnh
-    public JobPost(String title, String description, String position, String qualification, String experience, String type, String salary) {
+    public JobPost(Recruiter recruiter,String title, String description, String position, String qualification, String experience, String type, String salary, Date expirateAt) {
         this.title = title;
         this.description = description;
         this.position = position;
@@ -60,6 +60,8 @@ public class JobPost {
         this.experience = experience;
         this.type = type;
         this.salary = salary;
+        this.recruiter = recruiter;
+        this.expirateAt = expirateAt;
     }
 
     // Tự động gán ngày tạo trước khi persist
