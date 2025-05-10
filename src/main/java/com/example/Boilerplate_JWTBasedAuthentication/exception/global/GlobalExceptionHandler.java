@@ -216,6 +216,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
+    @ExceptionHandler(WrongCurrentPasswordException.class)
+    public ResponseEntity<RestResponse<Void>> handleWrongCurrentPasswordException(WrongCurrentPasswordException e) {
+        log.warn("Wrong current password: {}", e.getMessage());
+
+        RestResponse<Void> restResponse = RestResponse.error(
+                HttpStatus.BAD_REQUEST.value(),
+                "Wrong current password",
+                e.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
+    }
+
     // Bắt tất cả các exception còn lại để tránh application bị crash.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestResponse<Void>> handleGeneralException(Exception ex) {
