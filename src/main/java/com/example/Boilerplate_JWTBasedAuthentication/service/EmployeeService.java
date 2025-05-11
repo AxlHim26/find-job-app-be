@@ -1,6 +1,7 @@
 package com.example.Boilerplate_JWTBasedAuthentication.service;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.ChangeImageRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.UpdateEmployeeProfileRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.EmployeeProfileDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.UpdateEmployeeProfileResponse;
@@ -105,5 +106,26 @@ public class EmployeeService {
                 .build();
 
         return  response;
+    }
+
+    public String changeProfileImage(String username, ChangeImageRequest request) {
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+        Employee employee = user.getEmployee();
+
+        employee.setAvatarLink(request.getImageUrl());
+        employeeRepository.save(employee);
+
+        return request.getImageUrl();
+    }
+
+    public String getProfileImage(String username) {
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+        Employee employee = user.getEmployee();
+
+        return employee.getAvatarLink();
     }
 }
