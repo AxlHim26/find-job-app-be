@@ -105,6 +105,12 @@ public class AuthService {
                 .email(user.getUsername())
                 .name(user.getName())
                 .role(user.getRoles().iterator().next().getName())
+                .imageUrl(
+                        user.getRoles().iterator().next().getName().equals("ROLE_EMPLOYEE") ?
+                                user.getEmployee().getAvatarLink() :
+                                // recruiter chưa có trường image nên mặc định là 1 link nào đó
+                                "https://spring.io/img/projects/spring-boot.svg"
+                )
                 .token(accessToken)
                 .build();
     }

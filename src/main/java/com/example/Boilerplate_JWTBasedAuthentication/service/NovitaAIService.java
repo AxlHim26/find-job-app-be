@@ -53,7 +53,7 @@ public class NovitaAIService {
             NovitaAIRequest requestBody = NovitaAIRequest.builder()
                     .model("deepseek/deepseek-r1-turbo")
                     .messages(messages)
-                    .max_tokens(512)
+                    .max_tokens(2000)
                     .build();
 
             // Tạo HttpEntity
