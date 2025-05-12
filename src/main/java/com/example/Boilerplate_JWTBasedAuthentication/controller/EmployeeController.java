@@ -56,7 +56,6 @@ public class EmployeeController {
     }
 
     @PostMapping("/change-password")
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<RestResponse<Void>> changePassword(
             @RequestBody ChangePasswordRequest request
     ) throws WrongCurrentPasswordException {
@@ -74,7 +73,6 @@ public class EmployeeController {
     }
 
     @GetMapping("/avatar")
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<RestResponse<String>> getProfileImage() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -88,7 +86,6 @@ public class EmployeeController {
     }
 
     @PostMapping("/change-avatar")
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<RestResponse<String>> changeProfileImage(
             @RequestBody ChangeImageRequest request
             ) {

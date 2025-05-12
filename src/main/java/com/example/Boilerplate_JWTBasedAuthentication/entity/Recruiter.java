@@ -35,6 +35,9 @@ public class Recruiter {
     @Column(name = "specialization", columnDefinition = "LONGTEXT")
     private String specialization;
 
+    @Column(name = "avatar_link", nullable = true)
+    private String avatarLink;
+
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;

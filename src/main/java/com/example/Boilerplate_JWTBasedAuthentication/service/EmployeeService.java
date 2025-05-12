@@ -6,8 +6,10 @@ import com.example.Boilerplate_JWTBasedAuthentication.dto.request.UpdateEmployee
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.EmployeeProfileDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.UpdateEmployeeProfileResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.Recruiter;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.EmployeeRepository;
+import com.example.Boilerplate_JWTBasedAuthentication.repository.RecruiterRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.security.JwtService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,11 +26,13 @@ public class EmployeeService {
     private final UserRepository userRepository;
     private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     private final JwtService jwtService;
+    private final RecruiterRepository recruiterRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository, JwtService jwtService) {
+    public EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository, JwtService jwtService, RecruiterRepository recruiterRepository) {
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.recruiterRepository = recruiterRepository;
     }
 
     public RestResponse<EmployeeProfileDTO> getEmployeeProfile(String username) {
@@ -112,10 +116,16 @@ public class EmployeeService {
         User user = userRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")
         );
-        Employee employee = user.getEmployee();
 
-        employee.setAvatarLink(request.getImageUrl());
-        employeeRepository.save(employee);
+        if(user.getRoles().iterator().next().getName().equals("ROLE_EMPLOYEE")){
+            Employee employee = user.getEmployee();
+            employee.setAvatarLink(request.getImageUrl());
+            employeeRepository.save(employee);
+        } else {
+            Recruiter recruiter = user.getRecruiter();
+            recruiter.setAvatarLink(request.getImageUrl());
+            recruiterRepository.save(recruiter);
+        }
 
         return request.getImageUrl();
     }
@@ -124,8 +134,11 @@ public class EmployeeService {
         User user = userRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")
         );
-        Employee employee = user.getEmployee();
 
-        return employee.getAvatarLink();
+        if(user.getRoles().iterator().next().getName().equals("ROLE_EMPLOYEE")){
+            return user.getEmployee().getAvatarLink();
+        }
+
+        return user.getRecruiter().getAvatarLink();
     }
 }
