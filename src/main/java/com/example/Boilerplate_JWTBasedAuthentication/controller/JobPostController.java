@@ -2,10 +2,13 @@ package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobPostRequest;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.SaveJobRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.ListJobResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.NewestJobResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SaveJobStatus;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SavedJob;
 import com.example.Boilerplate_JWTBasedAuthentication.service.JobPostService;
 import lombok.AllArgsConstructor;
-import org.hibernate.dialect.temptable.TemporaryTableSessionUidColumn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,6 +55,44 @@ public class JobPostController {
                 RestResponse.success(
                     list,
                         "get list success!"
+                )
+        );
+    }
+
+    @GetMapping("/newest-jobs")
+    public ResponseEntity<RestResponse<List<NewestJobResponse>>> getNewestJobs(){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(jobPostService.getNewestJob(),
+                        "Get newest job ok")
+        );
+    }
+
+    @PostMapping("/save-job")
+    public ResponseEntity<RestResponse<SaveJobStatus>> saveJob(
+            @RequestBody SaveJobRequest request
+    ){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(
+                        jobPostService.saveJob(email, request),
+                        "Operate save job"
+                )
+        );
+    }
+
+    @GetMapping("/saved-jobs")
+    public ResponseEntity<RestResponse<List<SavedJob>>> getSavedJob() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(
+                        jobPostService.getSavedJob(email),
+                        "Get saved job ok"
                 )
         );
     }
