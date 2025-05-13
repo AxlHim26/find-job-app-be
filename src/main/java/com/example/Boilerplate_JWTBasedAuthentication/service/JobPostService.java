@@ -200,6 +200,7 @@ public class JobPostService {
                         .location(jobPost.getPosition())
                         .jobType(jobPost.getType())
                         .createdAt(jobPost.getCreatedAt())
+                        .jobPosition(jobPost.getPosition())
                         .salary(jobPost.getSalary())
                         .build()
         ).toList();
