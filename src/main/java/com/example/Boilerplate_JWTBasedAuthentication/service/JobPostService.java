@@ -47,6 +47,7 @@ public class JobPostService {
                 jobPostRequest.getQualification(),
                 jobPostRequest.getExperience(),
                 jobPostRequest.getType(),
+                jobPostRequest.getWorkplaceType(),
                 jobPostRequest.getSalary(),
                 jobPostRequest.getExpirateAt()
         );
@@ -65,6 +66,7 @@ public class JobPostService {
             listJobResponses.add(
                     new ListJobResponse(
                             jobPost.getTitle(),
+                            jobPost.getRecruiter().getAvatarLink(),
                             jobPost.getDescription(),
                             jobPost.getPosition(),
                             jobPost.getQualification(),
@@ -100,6 +102,7 @@ public class JobPostService {
             listJobResponses.add(
                     new ListJobResponse(
                             jobPost.getTitle(),
+                            jobPost.getRecruiter().getAvatarLink(),
                             jobPost.getDescription(),
                             jobPost.getPosition(),
                             jobPost.getQualification(),
