@@ -12,6 +12,9 @@ import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +32,7 @@ public class JobPostService {
     private final JobPostRepository jobPostRepository;
     private final EmployeeRepository employeeRepository;
     private final ApplicationRepository applicationRepository;
+    private final JavaMailSenderImpl mailSender;
 
     @Transactional
     public void creatJopPost(JobPostRequest jobPostRequest, String mail) throws Exception{
@@ -226,6 +230,8 @@ public class JobPostService {
 
     @Transactional
     public void applyFor(ApplyJobRequest request, String username) {
+        boolean isUpdateCV = false;
+
         User user = userRepository.findByEmail(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")
         );
@@ -241,14 +247,38 @@ public class JobPostService {
         if (application != null) {
             application.setCvLink(request.getCvLink());
             applicationRepository.save(application);
-            return;
+            isUpdateCV = true;
+        } else {
+            // Tạo application mới nếu chưa có
+            Application newApplication = new Application();
+            newApplication.setEmployee(employee);
+            newApplication.setJobPost(jobPost);
+            newApplication.setCvLink(request.getCvLink());
+            applicationRepository.save(newApplication);
+            isUpdateCV = false;
         }
 
-        // Tạo application mới nếu chưa có
-        Application newApplication = new Application();
-        newApplication.setEmployee(employee);
-        newApplication.setJobPost(jobPost);
-        newApplication.setCvLink(request.getCvLink());
-        applicationRepository.save(newApplication);
+        // gửi mail thông báo
+        sendMailNotificationTo(username, jobPost, isUpdateCV, request.getCvLink());
+    }
+
+    @Async
+    protected void sendMailNotificationTo(String username, JobPost jobPost, boolean isUpdateCV, String cvLink) {
+        try {
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(username);
+            if (isUpdateCV) {
+                mail.setSubject("Updated your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
+                mail.setText("Your cv of this post is updated successfully, you can see your final CV here : " + cvLink);
+            } else {
+                mail.setSubject("Applied your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
+                mail.setText("Your cv of this post is apply successfully, you can see your final CV here : " + cvLink);
+            }
+
+            mailSender.send(mail);
+        } catch (Exception e) {
+            log.error("Exception occurred while sending email", e);
+            throw e;
+        }
     }
 }
