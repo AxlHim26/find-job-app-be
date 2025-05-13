@@ -2,6 +2,8 @@ package com.example.Boilerplate_JWTBasedAuthentication.dto.respone;
 
 import lombok.*;
 
+import java.util.Date;
+
 @Builder
 @Getter
 @Setter
@@ -16,5 +18,6 @@ public class NewestJobResponse {
     private String jobPosition;
     private String jobType;
     private String salary;
+    private Date createdAt;
     private boolean isSaved;
 }
