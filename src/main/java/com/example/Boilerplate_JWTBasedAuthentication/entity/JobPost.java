@@ -41,6 +41,9 @@ public class JobPost {
     @Column(name = "expirate_at")
     private Date expirateAt;
 
+    @Column(name = "requirement")
+    private String requirement;
+
     @Column(name = "created_at")
     private Date createdAt;
 
@@ -52,10 +55,11 @@ public class JobPost {
     private List<Application> applications;
 
     // Constructor tùy chỉnh
-    public JobPost(Recruiter recruiter,String title, String description, String position, String qualification, String experience, String type, String salary, Date expirateAt) {
+    public JobPost(Recruiter recruiter,String title, String description, String requirement, String position, String qualification, String experience, String type, String salary, Date expirateAt) {
         this.title = title;
         this.description = description;
         this.position = position;
+        this.requirement = requirement;
         this.qualification = qualification;
         this.experience = experience;
         this.type = type;

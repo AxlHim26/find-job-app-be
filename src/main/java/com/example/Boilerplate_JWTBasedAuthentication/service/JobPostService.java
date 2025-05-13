@@ -2,10 +2,7 @@ package com.example.Boilerplate_JWTBasedAuthentication.service;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobPostRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.SaveJobRequest;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.ListJobResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.NewestJobResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SaveJobStatus;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SavedJob;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.*;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.JobPost;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.Recruiter;
@@ -43,6 +40,7 @@ public class JobPostService {
                 recruiter,
                 jobPostRequest.getTitle(),
                 jobPostRequest.getDescription(),
+                jobPostRequest.getRequirement(),
                 jobPostRequest.getPosition(),
                 jobPostRequest.getQualification(),
                 jobPostRequest.getExperience(),
@@ -75,7 +73,7 @@ public class JobPostService {
                             jobPost.getCreatedAt(),
                             user.getName(),
                             recruiter.getLocation(),
-                            "avatar"
+                            recruiter.getAvatarLink()
                     )
             );
         }
@@ -198,5 +196,26 @@ public class JobPostService {
         ).toList();
 
         return result;
+    }
+
+    @Transactional
+    public JobDetailResponse getJobDetail(int id){
+        JobPost jobPost = jobPostRepository.findJobPostsById(id);
+        Recruiter recruiter = jobPost.getRecruiter();
+        User user = recruiter.getUser();
+
+        return new JobDetailResponse(
+                recruiter.getAvatarLink(),
+                user.getName(),
+                jobPost.getTitle(),
+                recruiter.getLocation(),
+                jobPost.getDescription(),
+                jobPost.getRequirement(),
+                jobPost.getPosition(),
+                jobPost.getQualification(),
+                jobPost.getExperience(),
+                jobPost.getType(),
+                jobPost.getSalary()
+        );
     }
 }
