@@ -282,4 +282,36 @@ public class JobPostService {
             throw e;
         }
     }
+
+    public List<JobSearchResponse> searchWith(Filter filter) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+        Employee employee = user.getEmployee();
+        List<Integer> savedJobs = employee.getJobPosts().stream().map(JobPost::getId).toList();
+
+        List<JobPost> filteredJobs = jobPostRepository.searchJobs(
+                filter.getTitle(),
+                filter.getLocation(),
+                filter.getPosition(),
+                filter.getExperience(),
+                filter.getSalary()
+        );
+
+        return filteredJobs.stream()
+                .map(job -> JobSearchResponse.builder()
+                        .id(job.getId())
+                        .imageUrl(job.getRecruiter().getAvatarLink())
+                        .jobTitle(job.getTitle())
+                        .companyName(job.getRecruiter().getUser().getName())
+                        .location(job.getRecruiter().getLocation())
+                        .jobPosition(job.getPosition())
+                        .jobType(job.getType())
+                        .salary(job.getSalary())
+                        .createdAt(job.getCreatedAt())
+                        .isSaved(savedJobs.contains(job.getId()))
+                        .build())
+                .toList();
+    }
 }
