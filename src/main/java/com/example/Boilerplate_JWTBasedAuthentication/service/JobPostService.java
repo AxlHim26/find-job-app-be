@@ -97,6 +97,7 @@ public class JobPostService {
         int count = Math.min(5, listJobPost.size());
         for (int i = 0; i < count; i++) {
             JobPost jobPost = listJobPost.get(i);
+            String avatar = recruiter.getAvatarLink().isEmpty() ? recruiter.getAvatarLink() : "";
             listJobResponses.add(
                     new ListJobResponse(
                             jobPost.getTitle(),
@@ -111,7 +112,7 @@ public class JobPostService {
                             jobPost.getCreatedAt(),
                             user.getName(),
                             recruiter.getLocation(),
-                            "avatar"
+                            avatar
                     )
             );
         }
@@ -141,7 +142,7 @@ public class JobPostService {
             
             jobItems.add(NewestJobResponse.builder()
                 .id(jobPost.getId())
-                .imageUrl("avatar") // Default avatar
+                .imageUrl(jobPost.getRecruiter().getAvatarLink()) // Default avatar
                 .jobTitle(jobPost.getTitle())
                 .companyName(u.getName())
                 .location(recruiter.getLocation())
@@ -210,6 +211,7 @@ public class JobPostService {
         return new JobDetailResponse(
                 recruiter.getAvatarLink(),
                 user.getName(),
+                user.getEmail(),
                 jobPost.getTitle(),
                 recruiter.getLocation(),
                 jobPost.getDescription(),
