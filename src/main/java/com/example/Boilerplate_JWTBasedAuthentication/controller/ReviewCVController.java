@@ -67,12 +67,33 @@ public class ReviewCVController {
 
             log.info("Python script found at: {}", pythonScriptPath);
 
+
+            String pythonCommand = "python";
+
+            try {
+                Process checkPython = new ProcessBuilder("python", "--version")
+                        .redirectErrorStream(true).start();
+                int exitCode = checkPython.waitFor();
+
+                // Nếu lỗi hoặc exitCode khác 0 thì fallback sang đường dẫn tuyệt đối
+                if (exitCode != 0) {
+                    throw new IOException("python not found");
+                }
+
+                log.info("Using system 'python' command.");
+            } catch (IOException | InterruptedException ex) {
+                // fallback
+                pythonCommand = "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
+                log.warn("System 'python' not available, fallback to: {}", pythonCommand);
+            }
+
             // Gọi Python script xử lý file PDF
             ProcessBuilder processBuilder = new ProcessBuilder(
-                    "python",
+                    pythonCommand,
                     pythonScriptPath.toString(),
                     tempFile.getAbsolutePath()
             );
+
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
