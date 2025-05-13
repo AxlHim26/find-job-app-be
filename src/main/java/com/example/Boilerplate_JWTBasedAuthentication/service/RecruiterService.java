@@ -2,12 +2,11 @@ package com.example.Boilerplate_JWTBasedAuthentication.service;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobIntroDTO;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RecruiterProfileRequest;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.CvResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.NewestJobResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.RecruiterInfoResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.JobPost;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.Recruiter;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.*;
+import com.example.Boilerplate_JWTBasedAuthentication.repository.JobPostRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.RecruiterRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +24,7 @@ import java.util.List;
 public class RecruiterService {
     private final UserRepository userRepository;
     private final RecruiterRepository recruiterRepository;
+    private final JobPostRepository jobPostRepository;
 
     @Transactional
     public void updateProfileRecruiter(String email, RecruiterProfileRequest recruiterProfileRequest){
@@ -98,5 +98,32 @@ public class RecruiterService {
                 recruiter.getSince(),
                 list
         );
+    }
+
+    @Transactional
+    public List<CvResponse> getCV(int id) {
+        JobPost jobPost = jobPostRepository.findJobPostsById(id);
+
+        List<Application> applications = jobPost.getApplications();
+        List<CvResponse> list = new ArrayList<>();
+
+        for (Application application : applications) {
+            Employee employee = application.getEmployee();
+
+            String location = employee.getLocation();
+            String avatarLink = employee.getAvatarLink();
+
+            list.add(
+                    new CvResponse(
+                            application.getId(),
+                            employee.getUser().getName(),
+                            (location == null ) ? "unknown" : location,
+                            (avatarLink == null ) ? "unknown" : avatarLink,
+                            application.getCvLink()
+                    )
+            );
+        }
+
+        return list;
     }
 }
