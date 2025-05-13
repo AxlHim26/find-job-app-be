@@ -119,4 +119,14 @@ public class JobPostController {
                 )
         );
     }
+
+    @PostMapping("/search")
+    public ResponseEntity<RestResponse<List<JobSearchResponse>>> search(@RequestBody Filter filter) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(
+                        jobPostService.searchWith(filter),
+                        "Search Job OK"
+                )
+        );
+    }
 }
