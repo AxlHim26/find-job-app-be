@@ -51,6 +51,9 @@ public class JobPost {
     @JoinColumn(name = "recruiter_id", nullable = false)
     private Recruiter recruiter;
 
+    @Column(name = "workplace_type")
+    private String workplaceType;
+
     @OneToMany(mappedBy = "jobPost", fetch = FetchType.LAZY)
     private List<Application> applications;
 
@@ -65,6 +68,7 @@ public class JobPost {
         this.type = type;
         this.salary = salary;
         this.recruiter = recruiter;
+        this.workplaceType = workplaceType;
         this.expirateAt = expirateAt;
     }
 
