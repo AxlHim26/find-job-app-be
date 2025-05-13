@@ -15,8 +15,9 @@ public class JobPostRequest {
     private String qualification;
     private String experience;
     private String type;
+    private String workplaceType;
     private String salary;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MMM dd, yyyy hh:mm:ss a", locale = "en")
     private Date expirateAt;
 }

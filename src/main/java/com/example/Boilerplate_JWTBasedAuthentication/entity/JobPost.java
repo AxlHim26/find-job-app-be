@@ -48,11 +48,14 @@ public class JobPost {
     @JoinColumn(name = "recruiter_id", nullable = false)
     private Recruiter recruiter;
 
+    @Column(name = "workplace_type")
+    private String workplaceType;
+
     @OneToMany(mappedBy = "jobPost", fetch = FetchType.LAZY)
     private List<Application> applications;
 
     // Constructor tùy chỉnh
-    public JobPost(Recruiter recruiter,String title, String description, String position, String qualification, String experience, String type, String salary, Date expirateAt) {
+    public JobPost(Recruiter recruiter,String title, String description, String position, String qualification, String experience, String type, String salary, String workplaceType, Date expirateAt) {
         this.title = title;
         this.description = description;
         this.position = position;
@@ -61,6 +64,7 @@ public class JobPost {
         this.type = type;
         this.salary = salary;
         this.recruiter = recruiter;
+        this.workplaceType = workplaceType;
         this.expirateAt = expirateAt;
     }
 
