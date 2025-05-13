@@ -58,7 +58,7 @@ public class JobPost {
     private List<Application> applications;
 
     // Constructor tùy chỉnh
-    public JobPost(Recruiter recruiter,String title, String description, String requirement, String position, String qualification, String experience, String type, String salary, Date expirateAt) {
+    public JobPost(Recruiter recruiter, String title, String description, String requirement, String position, String qualification, String experience, String type, String workplaceType, String salary, Date expirateAt) {
         this.title = title;
         this.description = description;
         this.position = position;

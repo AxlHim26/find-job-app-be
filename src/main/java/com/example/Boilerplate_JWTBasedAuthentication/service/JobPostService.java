@@ -33,7 +33,7 @@ public class JobPostService {
     @Transactional
     public void creatJopPost(JobPostRequest jobPostRequest, String mail) throws Exception{
         User user = userRepository.findByEmail(mail).orElseThrow(
-         () -> new UsernameNotFoundException("mail not found")
+                () -> new UsernameNotFoundException("mail not found")
         );
         Recruiter recruiter = user.getRecruiter();
         JobPost jobPost = new JobPost(
