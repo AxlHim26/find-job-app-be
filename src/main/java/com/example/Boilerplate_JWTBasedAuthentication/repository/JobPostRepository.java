@@ -9,4 +9,6 @@ import java.util.List;
 public interface JobPostRepository extends JpaRepository<JobPost, Integer> {
     @Query("SELECT j FROM JobPost j ORDER BY j.createdAt DESC")
     List<JobPost> findTop5ByOrderByCreatedAtDesc();
+
+    JobPost findJobPostsById(int id);
 }

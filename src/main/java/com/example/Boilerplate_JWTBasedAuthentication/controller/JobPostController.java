@@ -3,10 +3,7 @@ package com.example.Boilerplate_JWTBasedAuthentication.controller;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobPostRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.SaveJobRequest;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.ListJobResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.NewestJobResponse;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SaveJobStatus;
-import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.SavedJob;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.*;
 import com.example.Boilerplate_JWTBasedAuthentication.service.JobPostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -93,6 +90,18 @@ public class JobPostController {
                 RestResponse.success(
                         jobPostService.getSavedJob(email),
                         "Get saved job ok"
+                )
+        );
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<RestResponse<JobDetailResponse>> getDetail(@RequestParam int id) {
+        JobDetailResponse jobDetailResponse = jobPostService.getJobDetail(id);
+
+        return ResponseEntity.ok().body(
+                RestResponse.success(
+                        jobDetailResponse,
+                        "get success"
                 )
         );
     }

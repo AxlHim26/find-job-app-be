@@ -11,6 +11,7 @@ import java.util.Date;
 public class JobPostRequest {
     private String title;
     private String description;
+    private String requirement;
     private String position;
     private String qualification;
     private String experience;
