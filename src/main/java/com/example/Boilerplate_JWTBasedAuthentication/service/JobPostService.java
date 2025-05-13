@@ -1,12 +1,11 @@
 package com.example.Boilerplate_JWTBasedAuthentication.service;
 
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.ApplyJobRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobPostRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.SaveJobRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.*;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.Employee;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.JobPost;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.Recruiter;
-import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.*;
+import com.example.Boilerplate_JWTBasedAuthentication.repository.ApplicationRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.EmployeeRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.JobPostRepository;
 import com.example.Boilerplate_JWTBasedAuthentication.repository.UserRepository;
@@ -29,6 +28,7 @@ public class JobPostService {
     private final JobPostRepository jopPostRepository;
     private final JobPostRepository jobPostRepository;
     private final EmployeeRepository employeeRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     public void creatJopPost(JobPostRequest jobPostRequest, String mail) throws Exception{
@@ -141,9 +141,10 @@ public class JobPostService {
             
             jobItems.add(NewestJobResponse.builder()
                 .id(jobPost.getId())
-                .imageUrl("avatar") // Default avatar
+                .imageUrl(jobPost.getRecruiter().getAvatarLink())
                 .jobTitle(jobPost.getTitle())
                 .companyName(u.getName())
+                    .createdAt(jobPost.getCreatedAt())
                 .location(recruiter.getLocation())
                 .jobPosition(jobPost.getPosition())
                 .jobType(jobPost.getType())
@@ -194,6 +195,7 @@ public class JobPostService {
                         .companyName(jobPost.getRecruiter().getUser().getName())
                         .location(jobPost.getPosition())
                         .jobType(jobPost.getType())
+                        .createdAt(jobPost.getCreatedAt())
                         .salary(jobPost.getSalary())
                         .build()
         ).toList();
@@ -220,5 +222,33 @@ public class JobPostService {
                 jobPost.getType(),
                 jobPost.getSalary()
         );
+    }
+
+    @Transactional
+    public void applyFor(ApplyJobRequest request, String username) {
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+
+        Employee employee = user.getEmployee();
+        JobPost jobPost = jobPostRepository.findById(request.getJobId()).orElseThrow(
+                () -> new RuntimeException("Job Post with ID " + request.getJobId() + " not found")
+        );
+
+        // Nếu đã có application trước đó thì cập nhật CV link
+        Application application = applicationRepository.findByEmployeeAndJobPost(employee, jobPost);
+
+        if (application != null) {
+            application.setCvLink(request.getCvLink());
+            applicationRepository.save(application);
+            return;
+        }
+
+        // Tạo application mới nếu chưa có
+        Application newApplication = new Application();
+        newApplication.setEmployee(employee);
+        newApplication.setJobPost(jobPost);
+        newApplication.setCvLink(request.getCvLink());
+        applicationRepository.save(newApplication);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.request.ApplyJobRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.JobPostRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.SaveJobRequest;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.*;
@@ -102,6 +103,19 @@ public class JobPostController {
                 RestResponse.success(
                         jobDetailResponse,
                         "get success"
+                )
+        );
+    }
+
+    @PostMapping("/apply")
+    public ResponseEntity<RestResponse<Void>> applyJob(@RequestBody ApplyJobRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        jobPostService.applyFor(request, username);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                RestResponse.success(
+                        "Apply success"
                 )
         );
     }
