@@ -2,8 +2,11 @@ package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RecruiterProfileRequest;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.RecruiterInfoResponse;
+import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
 import com.example.Boilerplate_JWTBasedAuthentication.service.JobPostService;
 import com.example.Boilerplate_JWTBasedAuthentication.service.RecruiterService;
+import com.example.Boilerplate_JWTBasedAuthentication.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,7 +26,7 @@ public class RecruiterController {
         return ResponseEntity.ok().body(RestResponse.success("update success!"));
     }
     @GetMapping("get/profile")
-    public ResponseEntity<RestResponse<RecruiterProfileRequest>> getRecuiterProfile(){
+    public ResponseEntity<RestResponse<RecruiterProfileRequest>> getRecruiterProfile(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -33,5 +36,21 @@ public class RecruiterController {
                         "get profile success!"
                 )
         );
+    }
+    @GetMapping("/get/info")
+    public ResponseEntity<RestResponse<RecruiterInfoResponse>> getRecruiterInfo(@RequestParam String email){
+        String emailEmployee = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return  ResponseEntity.ok().body(RestResponse.success(
+                recruiterService.getRecruiterInfor(email, emailEmployee),
+                "get success"
+        ));
+    }
+
+    @GetMapping("/get/cv")
+    public ResponseEntity<RestResponse<Void>> getCv(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return null;
     }
 }

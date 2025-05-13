@@ -10,6 +10,7 @@ import lombok.Data;
 public class JobDetailResponse {
     private String imageLink;
     private String recruiterName;
+    private String recruiterMail;
     private String jobTitle;
     private String location;
     private String description;
