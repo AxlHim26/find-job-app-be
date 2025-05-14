@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -18,15 +19,15 @@ public class EmailService {
     }
 
     @Async
-    protected void sendMailNotificationTo(String username, JobPost jobPost, boolean isUpdateCV, String cvLink) {
+    public void sendMailNotificationTo(String username, String jobTitle, String recruiterName, boolean isUpdateCV, String cvLink) {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(username);
             if (isUpdateCV) {
-                mail.setSubject("Updated your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
+                mail.setSubject("Updated your CV in - " + jobTitle + " of company " + recruiterName);
                 mail.setText("Your cv of this post is updated successfully, you can see your final CV here : " + cvLink);
             } else {
-                mail.setSubject("Applied your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
+                mail.setSubject("Applied your CV in - " + jobTitle + " of company " + recruiterName);
                 mail.setText("Your cv of this post is apply successfully, you can see your final CV here : " + cvLink);
             }
 
@@ -38,7 +39,8 @@ public class EmailService {
     }
 
     @Async
-    protected void sendMailRejectNotification(String username, String jobTitle, String companyName) throws Exception {
+    @Transactional
+    public void sendMailRejectNotification(String username, String jobTitle, String companyName) throws Exception {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(username);
@@ -56,7 +58,6 @@ public class EmailService {
                     + companyName;
 
             mail.setText(mailContent);
-            // Assuming JavaMailSender is injected as mailSender
             mailSender.send(mail);
 
         } catch (Exception e) {
@@ -65,7 +66,8 @@ public class EmailService {
     }
 
     @Async
-    protected void sendMailAcceptNotification(String username, String jobTitle, String companyName, String linkCV) throws Exception {
+    @Transactional
+    public void sendMailAcceptNotification(String username, String jobTitle, String companyName, String linkCV) throws Exception {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(username);
@@ -81,7 +83,6 @@ public class EmailService {
                     + companyName;
 
             mail.setText(mailContent);
-            // Assuming mailSender is injected
             mailSender.send(mail);
 
         } catch (Exception e) {

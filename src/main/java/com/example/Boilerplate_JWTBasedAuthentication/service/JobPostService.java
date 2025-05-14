@@ -272,7 +272,7 @@ public class JobPostService {
         }
 
         // gửi mail thông báo
-        emailService.sendMailNotificationTo(username, jobPost, isUpdateCV, request.getCvLink());
+        emailService.sendMailNotificationTo(username, jobPost.getTitle(), jobPost.getRecruiter().getUser().getName(), isUpdateCV, request.getCvLink());
     }
 
 
