@@ -67,6 +67,7 @@ public class JobPostService {
         for (JobPost jobPost : listJobPost) {
             listJobResponses.add(
                     new ListJobResponse(
+                            jobPost.getId(),
                             jobPost.getTitle(),
                             jobPost.getRecruiter().getAvatarLink(),
                             jobPost.getDescription(),
@@ -101,9 +102,13 @@ public class JobPostService {
         int count = Math.min(5, listJobPost.size());
         for (int i = 0; i < count; i++) {
             JobPost jobPost = listJobPost.get(i);
-            String avatar = recruiter.getAvatarLink().isEmpty() ? recruiter.getAvatarLink() : "";
+            String avatar = (recruiter.getAvatarLink() == null || recruiter.getAvatarLink().isEmpty())
+                    ? "unknown"
+                    : recruiter.getAvatarLink();
+
             listJobResponses.add(
                     new ListJobResponse(
+                            jobPost.getId(),
                             jobPost.getTitle(),
                             jobPost.getRecruiter().getAvatarLink(),
                             jobPost.getDescription(),
@@ -210,17 +215,20 @@ public class JobPostService {
     }
 
     @Transactional
-    public JobDetailResponse getJobDetail(int id){
+    public JobDetailResponse getJobDetail(int id) {
         JobPost jobPost = jobPostRepository.findJobPostsById(id);
         Recruiter recruiter = jobPost.getRecruiter();
         User user = recruiter.getUser();
 
+        String avatarLink = recruiter.getAvatarLink();
+        String location = recruiter.getLocation();
+
         return new JobDetailResponse(
-                recruiter.getAvatarLink(),
+                (avatarLink == null || avatarLink.isEmpty()) ? "unknown" : avatarLink,
                 user.getName(),
                 user.getEmail(),
                 jobPost.getTitle(),
-                recruiter.getLocation(),
+                (location == null || location.isEmpty()) ? "unknown" : location,
                 jobPost.getDescription(),
                 jobPost.getRequirement(),
                 jobPost.getPosition(),
@@ -230,6 +238,7 @@ public class JobPostService {
                 jobPost.getSalary()
         );
     }
+
 
     @Transactional
     public void applyFor(ApplyJobRequest request, String username) {

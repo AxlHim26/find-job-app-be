@@ -2,6 +2,7 @@ package com.example.Boilerplate_JWTBasedAuthentication.controller;
 
 import com.example.Boilerplate_JWTBasedAuthentication.dto.common.RestResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.request.RecruiterProfileRequest;
+import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.CvResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.dto.respone.RecruiterInfoResponse;
 import com.example.Boilerplate_JWTBasedAuthentication.entity.User;
 import com.example.Boilerplate_JWTBasedAuthentication.service.JobPostService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/recruiter")
@@ -48,9 +51,13 @@ public class RecruiterController {
     }
 
     @GetMapping("/get/cv")
-    public ResponseEntity<RestResponse<Void>> getCv(){
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<RestResponse<List<CvResponse>>> getCv(@RequestParam int id){
 
-        return null;
+        return ResponseEntity.ok(
+                RestResponse.success(
+                        recruiterService.getCV(id),
+                        "get success"
+                )
+        );
     }
 }

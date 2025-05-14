@@ -11,6 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 public class ListJobResponse {
+    private int id;
     private String title;
     private String imageUrl;
     private String description;
