@@ -33,6 +33,7 @@ public class JobPostService {
     private final EmployeeRepository employeeRepository;
     private final ApplicationRepository applicationRepository;
     private final JavaMailSenderImpl mailSender;
+    private final EmailService emailService;
 
     @Transactional
     public void creatJopPost(JobPostRequest jobPostRequest, String mail) throws Exception{
@@ -224,11 +225,11 @@ public class JobPostService {
         String location = recruiter.getLocation();
 
         return new JobDetailResponse(
-                (avatarLink == null || avatarLink.isEmpty()) ? "unknown" : avatarLink,
+                (avatarLink == null) ? "unknown" : avatarLink,
                 user.getName(),
                 user.getEmail(),
                 jobPost.getTitle(),
-                (location == null || location.isEmpty()) ? "unknown" : location,
+                (location == null) ? "unknown" : location,
                 jobPost.getDescription(),
                 jobPost.getRequirement(),
                 jobPost.getPosition(),
@@ -271,28 +272,10 @@ public class JobPostService {
         }
 
         // gửi mail thông báo
-        sendMailNotificationTo(username, jobPost, isUpdateCV, request.getCvLink());
+        emailService.sendMailNotificationTo(username, jobPost, isUpdateCV, request.getCvLink());
     }
 
-    @Async
-    protected void sendMailNotificationTo(String username, JobPost jobPost, boolean isUpdateCV, String cvLink) {
-        try {
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(username);
-            if (isUpdateCV) {
-                mail.setSubject("Updated your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
-                mail.setText("Your cv of this post is updated successfully, you can see your final CV here : " + cvLink);
-            } else {
-                mail.setSubject("Applied your CV in - " + jobPost.getTitle() + " of company " + jobPost.getRecruiter().getUser().getName());
-                mail.setText("Your cv of this post is apply successfully, you can see your final CV here : " + cvLink);
-            }
 
-            mailSender.send(mail);
-        } catch (Exception e) {
-            log.error("Exception occurred while sending email", e);
-            throw e;
-        }
-    }
 
     public List<JobSearchResponse> searchWith(Filter filter) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
